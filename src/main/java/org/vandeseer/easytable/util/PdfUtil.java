@@ -98,47 +98,7 @@ public class PdfUtil {
     }
 
     private static List<String> wrapLine(final String line, final PDFont font, final int fontSize, final float maxWidth) {
-        if (PdfUtil.doesTextLineFit(line, font, fontSize, maxWidth)) {
-            return Collections.singletonList(line);
-        }
-
-        List<String> result = new ArrayList<>();
-        result.add(line);
-
-        final Map<String, String> splitByAndReplacementMap = Map.of(" ", " ",
-                "\\.", ".",
-                ",", ",");
-
-        for (Map.Entry<String, String> entry : splitByAndReplacementMap.entrySet()) {
-            final String splitRegex = entry.getKey();
-            final String replacement = entry.getValue();
-
-            result = result.stream()
-                    .flatMap(subLine -> {
-                        List<String> newLines = PdfUtil.splitBy(splitRegex, subLine, font, fontSize, maxWidth, replacement);
-
-                        if (newLines.isEmpty()) {
-                            newLines.add(line);
-                        }
-
-                        return newLines.stream();
-                    })
-                    .collect(Collectors.toList());
-
-            if (result.stream().allMatch(subLine -> PdfUtil.doesTextLineFit(subLine, font, fontSize, maxWidth))) {
-                break;
-            }
-        }
-
-        return result.stream().flatMap(subLine -> {
-            if (PdfUtil.doesTextLineFit(subLine, font, fontSize, maxWidth)) {
-                return Stream.of(subLine);
-            } else {
-                return PdfUtil.splitBySize(subLine, font, fontSize, maxWidth).stream();
-            }
-        }).collect(Collectors.toList());
-
-
+        return List.of(line);
     }
 
     private static List<String> splitBySize(final String line, final PDFont font, final int fontSize, final float maxWidth) {
