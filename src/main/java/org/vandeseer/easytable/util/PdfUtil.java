@@ -1,28 +1,24 @@
 package org.vandeseer.easytable.util;
 
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.vandeseer.easytable.util.FloatUtil.isEqualInEpsilon;
+
 /**
  * Provides some helping functions.
  */
-public class PdfUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PdfUtil {
 
-    private static final String NEW_LINE_REGEX = "\\r?\\n";
+    public static final String NEW_LINE_REGEX = "\\r?\\n";
 
-    /**
-     * The delta that is still acceptable in float comparisons.
-     */
-    private static final double EPSILON = 0.0001;
-
-
-    private PdfUtil() {
-
-    }
 
     /**
      * Computes the width of a String (in points).
@@ -139,6 +135,12 @@ public class PdfUtil {
         float width = 0;
 
         while (!words.empty()) {
+
+            // string with length of 1 can't be split.
+            if (words.peek().length() == 1 && line.length() == 0) {
+                return words.pop();
+            }
+
             float nextWordWidth = getStringWidth(words.peek(), font, fontSize);
 
             if (doesTextLineFit(width + nextWordWidth, maxWidth)) {
@@ -158,7 +160,6 @@ public class PdfUtil {
             return buildALine(words, font, fontSize, maxWidth);
         }
 
-        // don't string-cut anything if a word fit in a line
         return line.toString().trim();
     }
 
@@ -174,15 +175,10 @@ public class PdfUtil {
         // But this does may not work as expected due to floating point arithmetic.
         // Hence we use a delta here that is sufficient for our purposes.
 
+        //noinspection SuspiciousNameCombination
         if (isEqualInEpsilon(stringWidth, maxWidth)) return true; // we consider the two numbers being equal
 
         return maxWidth > stringWidth;
-    }
-
-    private static boolean isEqualInEpsilon(float stringWidth, float maxWidth) {
-        float difference = Math.abs(maxWidth - stringWidth);
-
-        return difference < EPSILON;
     }
 
 
