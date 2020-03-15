@@ -66,6 +66,7 @@ public class TextCell extends AbstractCell {
                 : super.getMinHeight();
     }
 
+
     /**
      * Calculates the cell's text's height in respect when horizontally printed/rendered.
      *
@@ -81,7 +82,7 @@ public class TextCell extends AbstractCell {
 
         if (settings.isWordBreak()) {
 
-            final int size = PdfUtil.getOptimalTextBreakLines(text, getFont(), getFontSize(), getWidthOfText()).size();
+            final int size = PdfUtil.getOptimalTextBreakLines(text, getFont(), getFontSize(), getMaxWidth()).size();
 
             final float heightOfTextLines = size * this.textHeight;
             final float heightOfLineSpacing = (size - 1) * this.textHeight * getLineSpacing();
@@ -112,7 +113,7 @@ public class TextCell extends AbstractCell {
         return notBrokenTextWidth;
     }
 
-    private float getMaxWidthOfText() {
+    public float getMaxWidthOfText() {
         float columnsWidth = getColumn().getWidth();
 
         // We have to take column spanning into account
@@ -124,6 +125,11 @@ public class TextCell extends AbstractCell {
             }
         }
         return columnsWidth;
+    }
+
+
+    public float getMaxWidth() {
+        return getMaxWidthOfText() - getHorizontalPadding();
     }
 
     // Adaption for Lombok
